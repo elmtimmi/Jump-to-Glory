@@ -124,9 +124,12 @@ public class mainCamera : MonoBehaviour
             spieleIntro = false;
         }
 
-        if (PlayerPrefs.GetInt("date") == 0 && (PlayerPrefs.GetInt("hour") == 0) || PlayerPrefs.GetInt("CharakterInfo") == 0)
+        if (PlayerPrefs.GetInt("date") == 0 && (PlayerPrefs.GetInt("hour") == 0) || PlayerPrefs.GetInt("CharaktereInfos") == 0)
         {
-            PlayerPrefs.SetInt("CharaktereInfo", 1);
+            PlayerPrefs.SetInt("CharaktereInfos", 1);
+
+            PlayerPrefs.SetFloat("münzenDublikator", 5);
+            PlayerPrefs.SetFloat("schafStopp", 5);
 
             PlayerPrefs.SetInt("date", System.DateTime.Now.Day);
             PlayerPrefs.SetInt("beschleunigung_Jani", 1);
@@ -146,7 +149,7 @@ public class mainCamera : MonoBehaviour
             PlayerPrefs.SetInt("maxGeschwindigkeit_Liva", 11);
 
             PlayerPrefs.SetInt("startGeschwindigkeit_Jani", 5);
-            PlayerPrefs.SetInt("startGeschwindigkeit_Timi", 4);
+            PlayerPrefs.SetInt("startGeschwindigkeit_Timi", 5);
             PlayerPrefs.SetInt("startGeschwindigkeit_Luki", 6);
             PlayerPrefs.SetInt("startGeschwindigkeit_Fini", 7);
             PlayerPrefs.SetInt("startGeschwindigkeit_Matze", 6);
@@ -171,7 +174,9 @@ public class mainCamera : MonoBehaviour
             {
                 score = Mathf.Round(this.transform.position.x);
             }
-            this.transform.position = new Vector3(spieler.transform.position.x + 3.5f, this.transform.position.y, -10);
+            if (!spieler.GetComponent<personControler>().die) {
+                this.transform.position = new Vector3(spieler.transform.position.x + 3.5f, this.transform.position.y, -10);
+            }
         }
         if (PlayerPrefs.GetInt("AufgabenGeschafft") >= 40)
         {

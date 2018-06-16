@@ -11,6 +11,8 @@ public class schaf : MonoBehaviour {
     public bool schaf2;
     public GameObject mainCamera;
     private mainCamera b;
+    GameObject Iteam;
+    GameObject Tramp;
     // Use this for initialization
     void Start () {
         //Transform Schaf = Instantiate(Schaf1) as Transform;
@@ -26,21 +28,19 @@ public class schaf : MonoBehaviour {
         }
         if (this.transform.rotation.z < -0.1f && !einmal && schaf1)
         {
-            Instantiate(Trampolin, this.transform.position + new Vector3(-5, 0, 0), Quaternion.identity);
-            if (Random.Range(1, 3) == 3)
-            {
-                Instantiate(dupppleJump, this.transform.position + new Vector3(b.a.speed * 1.5f, 11, 0), Quaternion.identity);
-            }
+            Tramp = Instantiate(Trampolin, this.transform.position + new Vector3(-5, 0, 0), Quaternion.identity);
+            Iteam = Instantiate(dupppleJump, this.transform.position + new Vector3(-4, 2, 0), Quaternion.identity);
             einmal = true;
         }
         if (this.transform.rotation.z > 0.225f && !einmal && schaf1)
         {
-            Instantiate(Trampolin, this.transform.position + new Vector3(-5, 0, 0), Quaternion.identity);
-            if (Random.Range(1, 3) == 3)
-            {
-                Instantiate(dupppleJump, this.transform.position + new Vector3(b.a.speed * 1.5f, 11, 0), Quaternion.identity);
-            }
+            Tramp = Instantiate(Trampolin, this.transform.position + new Vector3(-5, 0, 0), Quaternion.identity);
+            Iteam = Instantiate(dupppleJump, this.transform.position + new Vector3(-4, 2, 0), Quaternion.identity);
             einmal = true;
+        }
+        if (Iteam != null)
+        {
+            Iteam.transform.position = new Vector3(Iteam.transform.position.x, Tramp.transform.position.y+ 2, Iteam.transform.position.z);
         }
     }
 }

@@ -32,11 +32,13 @@ public class CharakterButton : MonoBehaviour {
     public GameObject menu;
     int einmal;
     public bool doublejump;
+    public bool münzenDublikator;
+    public bool schafStopp;
 
 
     void Start() //Lets start by getting a reference to our image component.
     {
-        if (!doublejump)
+        if (!doublejump && !münzenDublikator && !schafStopp)
         {
             myImageComponent = GetComponent<Image>();
         }
@@ -296,6 +298,29 @@ public class CharakterButton : MonoBehaviour {
             instruction.text = "" + PlayerPrefs.GetInt("AnfangsDoublejumps");
             this.gameObject.transform.GetChild(0).gameObject.GetComponent<Text>().text = "+1 anfangs-doublejump\n" + (10 + 2 * PlayerPrefs.GetInt("AnfangsDoublejumps")) + ".000";
         }
+        if (münzenDublikator)
+        {
+            instruction.text = "" + PlayerPrefs.GetFloat("münzenDublikator") + "%";
+            if (PlayerPrefs.GetFloat("münzenDublikator") % 1 == 0) {
+                this.gameObject.transform.GetChild(0).gameObject.GetComponent<Text>().text = "+ 2,5% Chance\n" + (10 + PlayerPrefs.GetFloat("münzenDublikator")) + ".000";
+            }
+            else
+            {
+                this.gameObject.transform.GetChild(0).gameObject.GetComponent<Text>().text = "+ 2,5% Chance\n" + (10 + PlayerPrefs.GetFloat("münzenDublikator")) + "00";
+            }
+        }
+        if (schafStopp)
+        {
+            instruction.text = "" + PlayerPrefs.GetFloat("schafStopp") + "%";
+            if (PlayerPrefs.GetFloat("schafStopp") % 1 == 0)
+            {
+                this.gameObject.transform.GetChild(0).gameObject.GetComponent<Text>().text = "+ 2,5% Chance\n" + (10 + PlayerPrefs.GetFloat("schafStopp")) + ".000";
+            }
+            else
+            {
+                this.gameObject.transform.GetChild(0).gameObject.GetComponent<Text>().text = "+ 2,5% Chance\n" + (10 + PlayerPrefs.GetFloat("schafStopp")) + "00";
+            }
+        }
     }
     public void introWeiter(bool charakter)
     {
@@ -318,6 +343,24 @@ public class CharakterButton : MonoBehaviour {
         {
             a.money -= (10000 + 2000 * PlayerPrefs.GetInt("AnfangsDoublejumps"));
             PlayerPrefs.SetInt("AnfangsDoublejumps", PlayerPrefs.GetInt("AnfangsDoublejumps") + 1);
+            PlayerPrefs.SetFloat("money", a.money);
+        }
+    }
+    public void MünzenDublikator()
+    {
+        if (a.money >= 10000 + 1000 * PlayerPrefs.GetFloat("münzenDublikator"))
+        {
+            a.money -= (10000 + 1000 * PlayerPrefs.GetFloat("münzenDublikator"));
+            PlayerPrefs.SetFloat("münzenDublikator", PlayerPrefs.GetFloat("münzenDublikator") + 2.5f);
+            PlayerPrefs.SetFloat("money", a.money);
+        }
+    }
+    public void SchafStopp()
+    {
+        if (a.money >= 10000 + 1000 * PlayerPrefs.GetFloat("schafStopp"))
+        {
+            a.money -= (10000 + 1000 * PlayerPrefs.GetFloat("schafStopp"));
+            PlayerPrefs.SetFloat("schafStopp", PlayerPrefs.GetFloat("schafStopp") + 2.5f);
             PlayerPrefs.SetFloat("money", a.money);
         }
     }

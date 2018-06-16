@@ -25,6 +25,12 @@ public class personControler : MonoBehaviour
     public GameObject Wiese2;
     public GameObject Wiese3;
     public GameObject Wiese;
+    public GameObject Straße;
+    public GameObject Straßenbahn;
+    public GameObject Auto1;
+    public GameObject Auto2;
+    public GameObject Auto3;
+    public GameObject Auto4;
     public GameObject Portal;
     public GameObject Trampolin1;
     public GameObject Trampolin2;
@@ -32,6 +38,7 @@ public class personControler : MonoBehaviour
     public GameObject Schaf1;
     public GameObject Schaf2;
     public GameObject Häuserkette;
+    public GameObject WieseHintergrund;
     public GameObject Münze;
     public GameObject Haus;
     public float length;
@@ -60,8 +67,14 @@ public class personControler : MonoBehaviour
     public int rotation;
     public GameObject SchafWarnung;
     public GameObject SchafWarnung2;
+    public GameObject StraßenbahnWarnung;
     public GameObject TrampolinHinweiß;
     int spwanschaf;
+    float spawnAuto;
+    public bool die;
+    public int drehung;
+    GameObject Portal2;
+    GameObject Tram;
 
     void Awake()
     {
@@ -73,6 +86,7 @@ public class personControler : MonoBehaviour
     {
         SchafWarnung.gameObject.SetActive(false);
         SchafWarnung2.gameObject.SetActive(false);
+        StraßenbahnWarnung.gameObject.SetActive(false);
         anim = GetComponent<Animator>();
         a = mainCamera.GetComponent<mainCamera>();
         rb = GetComponent<Rigidbody>();
@@ -81,7 +95,6 @@ public class personControler : MonoBehaviour
     }
     void OnTriggerEnter(Collider other)
     {
-        Debug.Log(other.transform.name);
         if (other.transform.name == "dubbleJump(Clone)")
         {
             a.duppleJump++;
@@ -102,7 +115,10 @@ public class personControler : MonoBehaviour
         }
         if (other.transform.name == "Schaf1(Clone)")
         {
-            a.geheZumMenu = true;
+            die = true;
+            speed = -5;
+            drehung = 10;
+            rb.AddForce(new Vector3(-10, 0, 0) * 200);
         }
     }
     void OnCollisionStay(Collision col)
@@ -111,7 +127,6 @@ public class personControler : MonoBehaviour
         {
             yWegMaus = Input.mousePosition.y;
             einmalGrounted = true;
-            Debug.Log("reset");
         }
         isGrounded = true;
         a.bodenBerührt = true;
@@ -145,7 +160,25 @@ public class personControler : MonoBehaviour
         }
         if (col.transform.name == "Schaf2(Clone)")
         {
-            a.geheZumMenu = true;
+            die = true;
+            drehung = 10;
+            rb.AddForce(new Vector3(speed, 10, 0) * 25);
+        }
+        if (col.transform.name == "Straßenbahn(Clone)" && col.collider.GetType() == typeof(CapsuleCollider))
+        {
+            die = true;
+            speed = -5;
+            drehung = 10;
+            rb.AddForce(new Vector3(-10, 0, 0) * 100);
+        }
+        if (col.transform.name == "Grünes_Auto(Clone)" || col.transform.name == "Rotes_Auto(Clone)" || col.transform.name == "Weißes_Auto(Clone)" || col.transform.name == "Blaues_Auto(Clone)")
+        {
+            if (col.collider.GetType() == typeof(CapsuleCollider) && drehung == 0)
+            {
+                die = true;
+                drehung = 10;
+                rb.AddForce(new Vector3(10, 10, 0) * 100);
+            }
         }
     }
     void OnCollisionEnter(Collision col)
@@ -163,7 +196,6 @@ public class personControler : MonoBehaviour
             string sceneName = currentScene.name;
             if (sceneName != "menu 1" && sceneName != "erste" && sceneName != "Shop" && a.spieler == this.gameObject)
             {
-               // speed = PlayerPrefs.GetInt("anfangsSpeed");
                 if (einmal == 0)
                 {
                     a.errungenschaftAn = false;
@@ -184,15 +216,39 @@ public class personControler : MonoBehaviour
                     int durchgänge = 0;
                     durchgänge++;
                     this.transform.position -= new Vector3(0, 50, 0);
-                    mainCamera.transform.position = new Vector3(0, this.transform.position.y + 4, 0);
-                    biom = Random.Range(1, 3);
+                    if (!die) {
+                        mainCamera.transform.position = new Vector3(0, this.transform.position.y + 4, 0);
+                    }
+                    if (biom == 0)
+                    {
+                        biom = Random.Range(1, 4);
+                    }
+                    else if (biom == 1)
+                    {
+                        biom = Random.Range(2, 4);
+                    }
+                    else if(biom == 2)
+                    {
+                       while(biom == 2)
+                        {
+                            biom = Random.Range(1, 4);
+                        }
+                    }
+                    else if(biom == 3)
+                    {
+                        biom = Random.Range(1, 3);
+                    }
                     length = 0;
                     if (biom == 1)
                     {
+                        SchafWarnung.gameObject.SetActive(false);
+                        SchafWarnung2.gameObject.SetActive(false);
+                        StraßenbahnWarnung.gameObject.SetActive(false);
                         Häuserkette.transform.position = this.transform.position - new Vector3 (0,-6.5f,-1);
-                        Haus = Instantiate(häuser_3, new Vector3(this.transform.position.x, this.transform.position.y - 5 + y, -1), Quaternion.identity);
-                        Haus = Instantiate(häuser_3, new Vector3(this.transform.position.x + 5.55f * 2, this.transform.position.y - 5 + y, -1), Quaternion.identity);
-                        length += 5.55f * 3;
+                        WieseHintergrund.transform.position = this.transform.position - new Vector3(0, 50f, -1);
+                        Haus = Instantiate(häuser_3, new Vector3(this.transform.position.x, this.transform.position.y - 5.5f + y, -1), Quaternion.identity);
+                        Haus = Instantiate(häuser_3, new Vector3(this.transform.position.x + 5.55f * 2, this.transform.position.y - 5.5f + y, -1), Quaternion.identity);
+                        length += 5.55f * 3 + 3;
                         for (int i = 0; length < 500; i++)
                         {
                             if (c < 6)
@@ -354,12 +410,14 @@ public class personControler : MonoBehaviour
                                 }
                             }
                         }
-                        Instantiate(Portal, Haus.transform.position - new Vector3(2, -7, -1), Quaternion.identity);
+                        Instantiate(Portal, this.transform.position + new Vector3(500, 5f, 0), Quaternion.identity);
+                        Instantiate(häuser_2, new Vector3(this.transform.position.x + 500 + 8.925f, this.transform.position.y - 4 + y, -1), Quaternion.identity);
                         loadMap = false;
                     }
                     if (biom == 2)
                     {
                         spawnSchaf = this.transform.position.x;
+                        WieseHintergrund.transform.position = this.transform.position + new Vector3(0, 6f, 1);
                         Häuserkette.transform.position = this.transform.position + new Vector3(0, 50, -1);
                         for (int i = 0; i < 13; i++)
                         {
@@ -378,12 +436,27 @@ public class personControler : MonoBehaviour
                             }
                         }
                         loadMap = false;
-                        Instantiate(Portal, Wiese.transform.position - new Vector3(20, - 4, -1), Quaternion.identity);
+                        Instantiate(Portal, this.transform.position + new Vector3(500, 5f, 0), Quaternion.identity);
+                    }
+                    if (biom == 3)
+                    {
+                        Häuserkette.transform.position = this.transform.position - new Vector3(0, -6.5f, -1);
+                        WieseHintergrund.transform.position = this.transform.position - new Vector3(0, 50f, -1);
+                        Tram = Instantiate(Straßenbahn, this.transform.position + new Vector3(speed * 3, 1.5f, 0), Quaternion.identity);
+                        spawnAuto = this.transform.position.x + speed * 2;
+                        SchafWarnung.gameObject.SetActive(false);
+                        SchafWarnung2.gameObject.SetActive(false);
+                        StraßenbahnWarnung.gameObject.SetActive(false);
+                        for (int i = 0; i < 13; i++) {
+                            Instantiate(Straße, new Vector3(this.transform.position.x + i * 41.3f, this.transform.position.y, -1), Quaternion.identity); //41,3
+                        }
+                        Portal2 = Instantiate(Portal, this.transform.position + new Vector3(500, 1.5f, 0), Quaternion.identity);
+                        loadMap = false;
                     }
                 }
                 if (biom == 2)
                 {
-                    if (rb.velocity.x < speed) {
+                    if (rb.velocity.x < speed && !die) {
                         rb.velocity = new Vector3(speed, rb.velocity.y, 0);
                     }
                     if (rb.velocity.x < 0.1f)
@@ -398,6 +471,7 @@ public class personControler : MonoBehaviour
                     {
                         SchafWarnung2.gameObject.SetActive(true);
                     }
+                    StraßenbahnWarnung.gameObject.SetActive(false);
                     if (spawnSchaf < this.transform.position.x)
                     {
                         SchafWarnung.gameObject.SetActive(false);
@@ -433,14 +507,57 @@ public class personControler : MonoBehaviour
                         }
                     }
                 }
-            
-                    if (rb.velocity.x < 0.1f)
+                if (biom == 3)
+                {
+                    if (Tram.transform.position.x - this.transform.position.x < speed * 2)
+                    {
+                        StraßenbahnWarnung.gameObject.SetActive(true);
+                    }
+                    if (Tram.transform.position.x - this.transform.position.x < 5 || Tram.transform.position.x - this.transform.position.x > 2 * speed)
+                    {
+                        StraßenbahnWarnung.gameObject.SetActive(false);
+                    }
+                    if (rb.velocity.x < speed && !die)
+                    {
+                        rb.velocity = new Vector3(speed, rb.velocity.y, 0);
+                    }
+                    if (spawnAuto < this.transform.position.x && Portal2.transform.position.x - this.transform.position.x > speed * 4)
+                    {
+                        spawnAuto = this.transform.position.x + speed * Random.Range(1.7f, 2.5f);
+                        int r = Random.Range(1, 6);
+                        if (r == 1)
+                        {
+                            Tram = Instantiate(Straßenbahn, this.transform.position + new Vector3(speed * 4, 1.5f, 0), Quaternion.identity);
+                            spawnAuto -= 2.5f;
+                        }
+                        if (r == 2)
+                        {
+                            Instantiate(Auto1, this.transform.position + new Vector3(speed * 4, 1.5f, 0), Quaternion.identity);
+                        }
+                        if (r == 3)
+                        {
+                            Instantiate(Auto2, this.transform.position + new Vector3(speed* 4, 1.5f, 0), Quaternion.identity);
+                            Instantiate(Auto3, this.transform.position + new Vector3(speed * 6, 1.5f, 0), Quaternion.identity);
+                            Tram = Instantiate(Straßenbahn, this.transform.position + new Vector3(speed * 8, 1.5f, 0), Quaternion.identity);
+                            spawnAuto += speed * 3.5f;
+                        }
+                        if (r == 4)
+                        {
+                            Instantiate(Auto3, this.transform.position + new Vector3(speed * 4, 1.5f, 0), Quaternion.identity);
+                        }
+                        if (r == 5)
+                        {
+                            Instantiate(Auto4, this.transform.position + new Vector3(speed * 4, 1.5f, 0), Quaternion.identity);
+                        }
+                    }
+                }
+                if (rb.velocity.x < 0.1f && !die)
                 {
                     rb.AddForce(new Vector3(10, 0, 0) * 10);
                 }
                 else
                 {
-                    if (rb.velocity.y < 0)
+                    if (rb.velocity.y < 0 && !die)
                     {
                         rb.velocity = new Vector3(speed, rb.velocity.y, 0);
                     }
@@ -501,7 +618,14 @@ public class personControler : MonoBehaviour
                     {
                         grounted = 2;
                         float faktor = 0;
-                        faktor = 3.5f;
+                        if (biom == 3)
+                        {
+                            faktor = 4.3f;
+                        }
+                        else
+                        {
+                            faktor = 3.5f;
+                        }
                         if (speed > PlayerPrefs.GetInt("maxSpeed"))
                         {
                             speed = PlayerPrefs.GetInt("maxSpeed");
@@ -515,7 +639,6 @@ public class personControler : MonoBehaviour
                                 rb.AddForce(new Vector3(0, 6 * 20, 0) * faktor);
                                 yWegMaus = Input.mousePosition.y;
                                 PlayAudio();
-                                Debug.Log("playAudio");
                                 this.audioSource.Play();
                             } 
                         }
@@ -571,7 +694,7 @@ public class personControler : MonoBehaviour
                 isGrounded = false;
                 if (started == 2)
                 {
-                    if (rb.velocity.x < 0.01f && biom == 1 || this.transform.position.y < mainCamera.transform.position.y - 10 || a.geheZumMenu)
+                    if (rb.velocity.x < 0.01f && biom == 1 || this.transform.position.y < mainCamera.transform.position.y - 11 || a.geheZumMenu)
                     {
                         if (colliders.transform.name != "dubbleJump(Clone)")
                         {
@@ -601,12 +724,16 @@ public class personControler : MonoBehaviour
                             loadMap = false;
                             SchafWarnung.gameObject.SetActive(false);
                             SchafWarnung2.gameObject.SetActive(false);
+                            StraßenbahnWarnung.gameObject.SetActive(false);
                         }
                     }
                 }
             }
             else
             {
+                die = false;
+                transform.rotation = Quaternion.identity;
+                drehung = 0;
                 started = 0;
                 if (this.gameObject.name == "Luki")
                 {
@@ -653,6 +780,15 @@ public class personControler : MonoBehaviour
         if (rotation == -1)
         {
             rotation = 90;
+        }
+        if (drehung > 0)
+        {
+            drehung--;
+            this.transform.Rotate(0, 0, -10);
+            if (drehung == 1)
+            {
+                a.geheZumMenu = true;
+            }
         }
         if (this.gameObject.name == "Flo")
         {

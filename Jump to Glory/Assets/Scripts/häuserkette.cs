@@ -32,7 +32,13 @@ public class häuserkette : MonoBehaviour {
                 spieler = a.spieler;
                 b = spieler.GetComponent<personControler>();
             }
-            rb.velocity = new Vector3(spieler.GetComponent<Rigidbody>().velocity.x * 0.6f, 0, 0);
+            if (!spieler.GetComponent<personControler>().die) {
+                rb.velocity = new Vector3(spieler.GetComponent<Rigidbody>().velocity.x * 0.6f, 0, 0);
+            }
+            else
+            {
+                rb.velocity = new Vector3(0, 0, 0);
+            }
             Scene currentScene = SceneManager.GetActiveScene();
             string sceneName = currentScene.name;
             if (sceneName == "menu 1")
